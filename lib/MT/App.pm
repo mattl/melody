@@ -315,7 +315,7 @@ sub listing {
     my ($opt) = @_;
 
     my $type = $opt->{type} || $opt->{Type} || $q->param('_type');
-    my $tmpl 
+    my $tmpl
       = $opt->{template}
       || $opt->{Template}
       || 'list_' . $type . '.tmpl';
@@ -907,7 +907,7 @@ sub init_query {
             }
         } ## end foreach my $p (@p)
         while ( my ( $key, $val ) = each %params ) {
-            if ( ref($val) && ( 'ARRAY' eq ref($val) ) ) {
+            if ( 'ARRAY' eq ref($val) ) {
                 $q->param( $key, @{ $params{$key} } );
             }
             else {
@@ -4358,15 +4358,15 @@ The C<%param> has can contain one or more of the following keys:
 The value of the C<filename> key is expected to be a filename (with or without
 a path) and will be checked for a variety of disallowed characters and strings
 as well as having an approved file extension as specified by the
-DeniedAssetFileExtensions and AssetFileExtensions configuration directives. 
+DeniedAssetFileExtensions and AssetFileExtensions configuration directives.
 The file does not have to exist on the filesystem to validate the filename.
 
 =item * data
 
-The value of the C<data> key is expected to be a scalar variable containing 
+The value of the C<data> key is expected to be a scalar variable containing
 binary data (presumably an image).  This data is checked (via
-C<MT::Image::has_html_signature>) for HTML-ish content within the first 1K of 
-the data. Image files (in particular) that contain embedded HTML or JavaScript 
+C<MT::Image::has_html_signature>) for HTML-ish content within the first 1K of
+the data. Image files (in particular) that contain embedded HTML or JavaScript
 are a known vector for an IE 6 and 7 content-sniffing vulnerability.
 
 =back
