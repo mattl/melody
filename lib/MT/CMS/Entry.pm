@@ -223,7 +223,7 @@ sub edit {
     ## show the necessary associated assets
     if ( $type eq 'entry' || $type eq 'page' ) {
         require MT::Asset;
-        require MT::ObjectAsset;
+        #require MT::ObjectAsset;
         my $assets = ();
         if ( $q->param('reedit') && $q->param('include_asset_ids') ) {
             my $include_asset_ids = $q->param('include_asset_ids');
@@ -257,22 +257,7 @@ sub edit {
             push @{$assets}, $asset_1;
         }
         elsif ($id) {
-            my $join_str = '= asset_id';
-            my @assets =
-              MT::Asset->load(
-                               { class => '*' },
-                               {
-                                  join =>
-                                    MT::ObjectAsset->join_on(
-                                                    undef,
-                                                    {
-                                                      asset_id  => \$join_str,
-                                                      object_ds => 'entry',
-                                                      object_id => $id
-                                                    }
-                                    )
-                               }
-              );
+            my @assets = MT::Asset->load_associations($obj);
             foreach my $asset (@assets) {
                 my $asset_1;
                 if ( $asset->class eq 'image' ) {
@@ -1138,16 +1123,15 @@ sub save {
 
     ## look if any assets have been included/removed from this entry
     require MT::Asset;
-    require MT::ObjectAsset;
+    #require MT::ObjectAsset;
     my $include_asset_ids = $q->param('include_asset_ids') || '';
     my @asset_ids = split( ',', $include_asset_ids );
     my $obj_assets = ();
-    my @obj_assets = MT::ObjectAsset->load(
-                            { object_ds => 'entry', object_id => $obj->id } );
-    foreach my $obj_asset (@obj_assets) {
-        my $asset_id = $obj_asset->asset_id;
-        $obj_assets->{$asset_id} = 1;
-    }
+    my @obj_assets = MT::Asset->load_associations($obj);
+    #foreach my $obj_asset (@obj_assets) {
+    #    my $asset_id = $obj_asset->id;
+    #    $obj_assets->{$asset_id} = 1;
+    #}
     my $seen = ();
     foreach my $asset_id (@asset_ids) {
         my $asset = MT->model('asset')->load($asset_id);
@@ -1156,9 +1140,8 @@ sub save {
         }
         $seen->{$asset_id} = 1;
     }
-    foreach my $asset_id ( keys %{$obj_assets} ) {
-        my $asset = MT->model('asset')->load($asset_id);
-        unless ( $seen->{$asset_id} ) {
+    foreach my $asset ( @obj_assets ) {
+        unless ( $seen->{$asset->id} ) {
             $asset->unassociate($obj);
         }
     }

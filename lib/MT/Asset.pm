@@ -541,6 +541,27 @@ sub clear_associations {
 
 }
 
+# This method is a static method. It does not require an instance for invokation.
+sub load_associations {
+    my ($obj) = @_;
+    my $join_str = '= asset_id';
+    my @assets =
+        MT->model('asset')->load(
+            { class => '*' },
+            {
+                join =>
+                    MT::ObjectAsset->join_on(
+                        undef,
+                        {
+                            asset_id  => \$join_str,
+                            object_ds => $obj->class_type,
+                            object_id => $obj->id
+                        }
+                    )
+            }
+        );
+}
+
 sub unassociate {
     my $asset = shift;
     my ($obj) = @_;
