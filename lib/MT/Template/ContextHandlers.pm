@@ -17803,22 +17803,7 @@ sub _hdlr_assets {
             @$assets = $e->get_summary_objs( 'all_assets' => 'MT::Asset' );
         }
         else {
-            require MT::ObjectAsset;
-            my $join_str = '= asset_id';
-            @$assets = MT::Asset->load(
-                                        { class => '*' },
-                                        {
-                                          join =>
-                                            MT::ObjectAsset->join_on(
-                                                    undef,
-                                                    {
-                                                      asset_id  => \$join_str,
-                                                      object_ds => 'entry',
-                                                      object_id => $e->id
-                                                    }
-                                            )
-                                        }
-            );
+            @$assets = MT->model('asset')->load_associations($e);
         }
 
         #
