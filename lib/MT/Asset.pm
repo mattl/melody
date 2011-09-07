@@ -542,9 +542,12 @@ sub clear_associations {
 }
 
 # This method is a static method. It does not require an instance for invokation.
+# This method loads an array of assets associated with the object provided.
 sub load_associations {
+    my $class = shift;
     my ($obj) = @_;
     my $join_str = '= asset_id';
+    require MT::ObjectAsset;
     my @assets =
         MT->model('asset')->load(
             { class => '*' },

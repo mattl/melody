@@ -222,14 +222,12 @@ sub edit {
 
     ## show the necessary associated assets
     if ( $type eq 'entry' || $type eq 'page' ) {
-        require MT::Asset;
-        #require MT::ObjectAsset;
         my $assets = ();
         if ( $q->param('reedit') && $q->param('include_asset_ids') ) {
             my $include_asset_ids = $q->param('include_asset_ids');
             my @asset_ids = split( ',', $include_asset_ids );
             foreach my $asset_id (@asset_ids) {
-                my $asset = MT::Asset->load($asset_id);
+                my $asset = MT->model('asset')->load($asset_id);
                 if ($asset) {
                     my $asset_1;
                     if ( $asset->class eq 'image' ) {
@@ -251,13 +249,13 @@ sub edit {
             } ## end foreach my $asset_id (@asset_ids)
         } ## end if ( $q->param('reedit'...))
         elsif ( $q->param('asset_id') && !$id ) {
-            my $asset = MT::Asset->load( $q->param('asset_id') );
+            my $asset = MT->model('asset')->load( $q->param('asset_id') );
             my $asset_1
               = { asset_id => $asset->id, asset_name => $asset->file_name };
             push @{$assets}, $asset_1;
         }
         elsif ($id) {
-            my @assets = MT::Asset->load_associations($obj);
+            my @assets = MT->model('asset')->load_associations($obj);
             foreach my $asset (@assets) {
                 my $asset_1;
                 if ( $asset->class eq 'image' ) {
@@ -1122,12 +1120,10 @@ sub save {
       );
 
     ## look if any assets have been included/removed from this entry
-    require MT::Asset;
-    #require MT::ObjectAsset;
     my $include_asset_ids = $q->param('include_asset_ids') || '';
     my @asset_ids = split( ',', $include_asset_ids );
     my $obj_assets = ();
-    my @obj_assets = MT::Asset->load_associations($obj);
+    my @obj_assets = MT->model('asset')->load_associations($obj);
     #foreach my $obj_asset (@obj_assets) {
     #    my $asset_id = $obj_asset->id;
     #    $obj_assets->{$asset_id} = 1;
